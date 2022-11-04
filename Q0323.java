@@ -1,2 +1,5 @@
-package PACKAGE_NAME;public class Q0323 {
+import java.util.ArrayList;
+
+public class Q0323 {
+
 }
