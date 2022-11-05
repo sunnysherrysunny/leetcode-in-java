@@ -1,32 +1,66 @@
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Arrays;
 
 public class Q0767 {
     public static String reorganizeString(String s) {
-        if (s.length() == 0)
-            return "";
+        int freqLen = 'z' - 'a' + 1;
+        CharacterFreq[] freqs = new CharacterFreq[freqLen];
+        for (int i = 0; i < freqLen; i++) {
+            freqs[i] = new CharacterFreq();
+            freqs[i].c = (char) ('a' + i);
+            freqs[i].freq = 0;
+        }
+        int count = 0;
+        int currIdx = 0;
+        CharacterFreq curr = null;
         char[] sArr = s.toCharArray();
-        StringBuilder res = new StringBuilder();
-        Queue<Character> pending = new LinkedList<>();
-        res.append(sArr[0]);
-        for(int i = 1; i < sArr.length; i ++){
-            if (res.charAt(res.length() - 1) == sArr[i]) {
-                pending.add(sArr[i]);
-            } else {
-                res.append(sArr[i]);
-                if (pending.size() > 0) {
-                    res.append(pending.remove());
-                }
-
+        for (char c : sArr) {
+            int idx = c - 'a';
+            CharacterFreq oldfreq = freqs[idx];
+            oldfreq.freq++;
+            count++;
+        }
+        Arrays.sort(freqs);
+        if ((count % 2 == 1 && freqs[0].freq > count / 2 + 1) || (count % 2 == 0 && freqs[0].freq > count / 2)) {
+            return "";
+        }
+        char[] res = new char[count];
+        for (int i = 0; i < count / 2; i++) {
+            while (currIdx < freqLen && freqs[currIdx].freq == 0) {
+                currIdx++;
+            }
+            if (currIdx >= freqLen) {
+                break;
+            }
+            curr = freqs[currIdx];
+            res[i * 2] = curr.c;
+            curr.freq--;
+        }
+        if (count % 2 == 1) {
+            while (currIdx < freqLen && freqs[currIdx].freq == 0) {
+                currIdx++;
+            }
+            if (currIdx < freqLen) {
+                curr = freqs[currIdx];
+                res[count - 1] = curr.c;
+                curr.freq--;
             }
         }
-        if (pending.size() > 0) {
-            return "";
+        for (int i = 0; i < count / 2; i++) {
+            while (currIdx < freqLen && freqs[currIdx].freq == 0) {
+                currIdx++;
+            }
+            if (currIdx >= freqLen) {
+                break;
+            }
+            curr = freqs[currIdx];
+            res[i * 2 + 1] = curr.c;
+            curr.freq--;
         }
-        return res.toString();
+
+        return String.valueOf(res);
     }
 
     public static void main(String[] args) {
-        System.out.println(reorganizeString("aaccccaaccaabb"));
+        System.out.println(reorganizeString("abbbbaaccdefaaaaaaaa"));
     }
 }
